@@ -1,6 +1,6 @@
 # Offline AI Video Pipeline: Setup Guide (LocalAI + Docker, 16GB RAM)
 
-This guide takes you from zero to a working offline video pipeline using AI, as part of my upcoming [blog post](https://webgrrrl.net) on setting up a local LLM using Docker.
+This guide takes you from zero to a working offline video pipeline using AI, and is part of my upcoming [blog post](https://webgrrrl.net) on challenges of setting up a local LLM using Docker.
 
 Qwen writes the script for each scene, Stable Diffusion generates images for the scenes, Piper narrates based on each scene, and FFmpeg assembles the scenes into a video. It does **not** assume you have unlimited memory, and it does not pretend that "just pull the Docker image and it works." Every step reflects a configuration or pitfall that was actually encountered on a 16GB machine.
 
@@ -17,19 +17,20 @@ Qwen writes the script for each scene, Stable Diffusion generates images for the
 
 ---
 
-## Step 1: Create the Directory Structure
+## Step 1: Create the Directory Structure -- stay connected to the Internet
 
-Create the following folders on your host (adjust the path to your preference):
+`git clone` this repo to your preferred path. In this example, I use `D:/`.
+Then, create the following folders on your host (adjust the `D:/offline-ai-video-pipeline/` path to your preference):
 
 ```text
-D:/docker/
+D:/offline-ai-video-pipeline/
 ├── models/                  # Model files (GGUF for Qwen and SD, ONNX for Piper) + YAML configs
 ├── backend_data/            # Persistent backend binaries (avoids re-download)
 ├── script/                  # Python scripts and generated assets are stored here
 └── docker-compose-localai.yaml
 ```
 
-**Why `backend_data` matters**: LocalAI's CPU image bundles `llama-cpp` and `stablediffusion-ggml`, but other backends are not bundled. Mounting this path ensures any backend you install survives container recreation.
+**Why `backend_data` matters**: LocalAI's CPU image bundles `llama-cpp` and `stablediffusion-ggml`, but other backends are not bundled. Mounting this path ensures any backend you install can survive container recreation.
 
 ---
 
@@ -48,8 +49,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - D:/docker/models:/build/models
-      - D:/docker/backend_data:/tmp/localai/backend_data
+      - D:/offline-ai-video-pipeline/models:/build/models
+      - D:/offline-ai-video-pipeline/backend_data:/tmp/localai/backend_data
     environment:
       - THREADS=8
       - LOCALAI_DISABLE_PRELOAD=true
@@ -129,9 +130,10 @@ parameters:
 ## Step 4: Start the Container and Verify
 
 Download the `localai/localai:latest-cpu` image from Docker Hub if you haven't done so.
+Then, run the following bash commands.
 
 ```bash
-cd D:/docker/
+cd D:/offline-ai-video-pipeline/
 docker compose -f docker-compose-localai.yaml up -d
 ```
 
@@ -171,7 +173,7 @@ time curl -X POST http://localhost:8080/v1/images/generations \
   --output sd_test.json
 ```
 
-In a second terminal, run `docker stats localai-studio` and watch memory. Peak should stay under ~10GB. Expect 2–3 minutes on CPU.
+You can monitor the memory usage under Docker Desktop's `Stats`, or run `docker stats localai-studio` in a separate terminal. Peak should stay under ~10GB. Expect 2–3 minutes on CPU.
 
 ### Test Piper
 
@@ -187,7 +189,7 @@ Expect 50–200KB. If you get a tiny file (under 1KB), the request failed. Check
 
 ---
 
-## Step 6: Write the Four Pipeline Scripts
+## Step 6: Write the Four Pipeline Scripts  -- start going offline and run locally
 
 ### `stage1_script.py` — Qwen Only
 
@@ -216,13 +218,13 @@ Reads scene count from `script.json`, renders each PNG+WAV pair with a Ken Burns
 
 ## Step 7: The Orchestration Script
 
-Create `run-all.sh and save it in the same directory as your other scripts:
+Create `run-all.sh` and save it in the same directory as your other scripts:
 
 ```bash
 #!/usr/bin/env bash
 set -e
 
-COMPOSE_FILE="D:/docker/compose/docker-compose-localai.yaml"
+COMPOSE_FILE="D:/offline-ai-video-pipeline/docker-compose-localai.yaml"
 
 # Wait until LocalAI answers, so the next stage does not start too early
 wait_for_localai() {
