@@ -1,0 +1,29 @@
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Operating Systems
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editors & IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs & Dependencies
+logs/
+*.log
+node_modules/
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+dist/
+build/
