@@ -3,7 +3,7 @@ import requests, json, sys, os
 
 BASE_URL = "http://localhost:8080/v1"
 LLM_MODEL = "qwen2.5-3b"
-PROJECT_DIR = "D:/Lorna/Documents/docker/video_output"
+PROJECT_DIR = "D:/offline-ai-video-pipeline/script/video_output"
 SCRIPT_PATH = os.path.join(PROJECT_DIR, "script.json")
 os.makedirs(PROJECT_DIR, exist_ok=True)
 
