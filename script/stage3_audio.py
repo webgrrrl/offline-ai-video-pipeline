@@ -3,7 +3,7 @@ import requests, json, os, sys
 
 BASE_URL = "http://localhost:8080/v1"
 TTS_MODEL = "piper-lessac"
-PROJECT_DIR = "D:/Lorna/Documents/docker/video_output"
+PROJECT_DIR = "D:/offline-ai-video-pipeline/script/video_output"
 SCRIPT_PATH = os.path.join(PROJECT_DIR, "script.json")
 ASSETS_DIR = os.path.join(PROJECT_DIR, "assets")
 os.makedirs(ASSETS_DIR, exist_ok=True)
