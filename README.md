@@ -218,7 +218,7 @@ Reads scene count from `script.json`, renders each PNG+WAV pair with a Ken Burns
 
 ## Step 7: The Orchestration Script
 
-Create `run-all.sh` and save it in the same directory as your other scripts (in this example, I save this under `script`:
+Create `run-all.sh` and save it in the same directory as your other scripts (in this example, I save it under `script`):
 
 ```bash
 #!/usr/bin/env bash
