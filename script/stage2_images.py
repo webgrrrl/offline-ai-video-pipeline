@@ -4,7 +4,7 @@ import requests, json, os, base64, sys
 BASE_URL = "http://localhost:8080/v1"
 IMAGE_MODEL = "stablediffusion"
 IMAGE_SIZE = "384x576"
-PROJECT_DIR = "D:/Lorna/Documents/docker/video_output"
+PROJECT_DIR = "D:/offline-ai-video-pipeline/script/video_output"
 SCRIPT_PATH = os.path.join(PROJECT_DIR, "script.json")
 ASSETS_DIR = os.path.join(PROJECT_DIR, "assets")
 os.makedirs(ASSETS_DIR, exist_ok=True)
