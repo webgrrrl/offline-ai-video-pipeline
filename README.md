@@ -1,6 +1,8 @@
 # Offline AI Video Pipeline: Setup Guide (LocalAI + Docker, 16GB RAM)
 
-This guide takes you from zero to a working offline video pipeline using AI: Qwen writes the script for each scene, Stable Diffusion generates images for the scenes, Piper narrates based on each scene, and FFmpeg assembles the scenes into a video. It does **not** assume you have unlimited memory, and it does not pretend that "just pull the Docker image and it works." Every step reflects a configuration or pitfall that was actually encountered on a 16GB machine.
+This guide takes you from zero to a working offline video pipeline using AI, as part of my upcoming [blog post](https://webgrrrl.net) on setting up a local LLM using Docker.
+
+Qwen writes the script for each scene, Stable Diffusion generates images for the scenes, Piper narrates based on each scene, and FFmpeg assembles the scenes into a video. It does **not** assume you have unlimited memory, and it does not pretend that "just pull the Docker image and it works." Every step reflects a configuration or pitfall that was actually encountered on a 16GB machine.
 
 ---
 
@@ -23,11 +25,8 @@ Create the following folders on your host (adjust the path to your preference):
 D:/docker/
 ├── models/                  # Model files (GGUF for Qwen and SD, ONNX for Piper) + YAML configs
 ├── backend_data/            # Persistent backend binaries (avoids re-download)
-├── video_output/
-│   ├── assets/              # Per-scene PNG, WAV, MP4
-│   └── script.json          # Stage 1 output
-└── compose/
-    └── docker-compose-localai.yaml
+├── script/                  # Python scripts and generated assets are stored here
+└── docker-compose-localai.yaml
 ```
 
 **Why `backend_data` matters**: LocalAI's CPU image bundles `llama-cpp` and `stablediffusion-ggml`, but other backends are not bundled. Mounting this path ensures any backend you install survives container recreation.
@@ -123,16 +122,27 @@ parameters:
   language: en_US
 ```
 
+(Adding for awareness: I may have missed a step here, so I'll add later. For the first run, Piper may download language and voice libraries, and you're required still have Internet connection at this point. I vaguely recalled that, once the libraries are downloaded, I copied everything under `/tmp/localai/backend_data` from Docker's `Files` into `D:\docker\backend_data\`, but I can't be sure exactly. This needed to be done, otherwise if you decide to stop/restart/delete the container, everything under `/tmp/localai/backend_data` will disappear and reset itself.)
+
 ---
 
 ## Step 4: Start the Container and Verify
 
+Download the `localai/localai:latest-cpu` image from Docker Hub if you haven't done so.
+
 ```bash
+cd D:/docker/
 docker compose -f docker-compose-localai.yaml up -d
+```
+
+You can check the `localai-studio` container logs to see whether the startup is complete.
+Then test to see if LocalAI can detect the models in your local computer.
+
+```bash
 curl http://localhost:8080/v1/models
 ```
 
-You should see `qwen2.5-3b`, `stablediffusion`, and `piper-lessac` in the response. If any are missing, check the YAML filename and the `name` field inside it.
+You should see `qwen2.5-3b`, `stablediffusion`, and `piper-lessac` in the response. If any are missing, check the YAML filename of each model and the `name` field inside it.
 
 ---
 
@@ -152,7 +162,7 @@ curl http://localhost:8080/v1/chat/completions -H "Content-Type: application/jso
 
 Expect a JSON response with `"content"` containing `OK`.
 
-### Test SD
+### Test SD (Stable Diffusion)
 
 ```bash
 time curl -X POST http://localhost:8080/v1/images/generations \
@@ -206,7 +216,7 @@ Reads scene count from `script.json`, renders each PNG+WAV pair with a Ken Burns
 
 ## Step 7: The Orchestration Script
 
-Create `run-all.sh`:
+Create `run-all.sh and save it in the same directory as your other scripts:
 
 ```bash
 #!/usr/bin/env bash
@@ -271,4 +281,4 @@ Stage 4 (FFmpeg) → final_video.mp4
 
 **Time budget** (cold start): Script generation ~25–40s, each image ~2–3 min, TTS ~1s per scene, rendering ~1–3 min. Total ~10–15 minutes for a 3-scene video.
 
-All configuration files and Python scripts are available in the GitHub repository: <!-- TODO: replace with your real repo URL --> https://github.com/webgrrrl/offline-ai-video-pipeline. The only external dependencies are Docker, Python `requests`, and FFmpeg. Everything else (models, backends, inference) runs offline once the models are downloaded.
+All configuration files and Python scripts are available in the GitHub repository: https://github.com/webgrrrl/offline-ai-video-pipeline. The only external dependencies are Docker, Python `requests`, and FFmpeg. Everything else (models, backends, inference) runs offline once the models are downloaded.
