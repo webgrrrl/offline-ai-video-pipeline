@@ -1,0 +1,7 @@
+name: stablediffusion
+backend: stablediffusion-ggml
+parameters:
+  model: v1-5-pruned_Q8_0.gguf
+  step: 20
+  width: 384
+  height: 576

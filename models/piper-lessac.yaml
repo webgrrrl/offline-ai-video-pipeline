@@ -1,0 +1,5 @@
+name: piper-lessac
+backend: piper
+parameters:
+  model: en_US-lessac-medium.onnx
+  language: en_US

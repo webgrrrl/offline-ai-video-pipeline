@@ -1,0 +1,4 @@
+name: qwen2.5-3b
+backend: llama-cpp
+parameters:
+  model: qwen2.5-3b-instruct-q4_k_m.gguf
