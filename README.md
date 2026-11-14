@@ -1,6 +1,6 @@
 # Offline AI Video Pipeline: Setup Guide (LocalAI + Docker, 16GB RAM)
 
-This guide takes you from zero to a working offline video pipeline using AI, and is part of my upcoming [blog post](https://webgrrrl.net) on challenges of setting up a local LLM using Docker.
+This guide takes you from zero to a working offline video pipeline using AI, and is part of my [blog post]([https://webgrrrl.net](https://webgrrrl.net/archives/exploring-locally-hosted-llm-setup-using-localai-and-docker-on-16gb-ram.htm)) detailing the challenges of setting up a local LLM using Docker.
 
 Qwen writes the script for each scene, Stable Diffusion generates images for the scenes, Piper narrates based on each scene, and FFmpeg assembles the scenes into a video. It does **not** assume you have unlimited memory, and it does not pretend that "just pull the Docker image and it works." Every step reflects a configuration or pitfall that was actually encountered on a 16GB machine.
 
