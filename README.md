@@ -123,7 +123,7 @@ parameters:
   language: en_US
 ```
 
-(Adding for awareness: I may have missed a step here, so I'll add later. For the first run, Piper may download language and voice libraries, and you're required still have Internet connection at this point. I vaguely recalled that, once the libraries are downloaded, I copied everything under `/tmp/localai/backend_data` from Docker's `Files` into `D:\docker\backend_data\`, but I can't be sure exactly. This needed to be done, otherwise if you decide to stop/restart/delete the container, everything under `/tmp/localai/backend_data` will disappear and reset itself.)
+(Adding for awareness: I may have missed a step here, so I'll add later. For the first run, Piper may download language and voice binaries. I vaguely recalled that, once the binaries are downloaded, I copied everything under `/tmp/localai/backend_data` from Docker's `Files` into `D:\offline-ai-video-pipeline\backend_data\`, but I can't be sure exactly. This needed to be done, otherwise if you decide to stop/restart/delete the container, everything under `/tmp/localai/backend_data` will disappear and reset itself.)
 
 ---
 
